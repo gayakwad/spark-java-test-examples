@@ -1,0 +1,63 @@
+
+
+group 'com.gayakwad'
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+
+
+configurations {
+    provided
+}
+
+sourceSets {
+    main {
+        compileClasspath += configurations.provided
+        test.compileClasspath += configurations.provided
+        test.runtimeClasspath += configurations.provided
+    }
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+
+version = System.getenv("BUILD_NUMBER") ?: "local"
+
+apply from: 'gradle/dependencies.gradle'
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        include '**/version.properties'
+        filter { String line -> line.replace "@buildversion", version }
+        filter { String line -> line.replace "@gitcommit", System.getenv("GIT_COMMIT") ?: "local" }
+        filter { String line -> line.replace "@buildtimestamp", new Date().toString() }
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.8'
+}
+
+eclipse {
+    classpath {
+        containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
+        containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8'
+    }
+}
+
+// if you use 'idea' plugin, otherwise fails with: Could not find method idea() for arguments...
+idea {
+    module {
+        /*
+         * If you omit [ ] around, it fails with: Cannot change configuration ':provided' after it has been resolved
+         * This is due Gradle 2.x using Groovy 2.3 that does not allow += for single elements addition.
+         * More: https://discuss.gradle.org/t/custom-provided-configuration-not-working-with-gradle-2-0-rc2-in-multi-project-mode/2459
+         */
+        scopes.PROVIDED.plus += [configurations.provided]
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
