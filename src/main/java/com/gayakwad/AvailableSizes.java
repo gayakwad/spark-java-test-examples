@@ -30,7 +30,6 @@ public class AvailableSizes implements Serializable {
                     return new Tuple2<>(row.getAs(SalesColumns.STYLE.name()), new GenericRowWithSchema(objects, SalesColumns.getOutputSchema()));
                 });
 
-
         JavaPairRDD<String, Row> withSizeRange = pairs.reduceByKey(new Function2<Row, Row, Row>() {
             @Override
             public Row call(Row aRow, Row bRow) {
