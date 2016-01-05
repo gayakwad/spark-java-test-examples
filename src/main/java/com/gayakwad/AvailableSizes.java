@@ -30,7 +30,7 @@ public class AvailableSizes implements Serializable {
                     return new Tuple2<>(row.getAs(SalesColumns.STYLE.name()), new GenericRowWithSchema(objects, SalesColumns.getOutputSchema()));
                 });
 
-        JavaPairRDD<String, Row> withSizeRange = pairs.reduceByKey(new Function2<Row, Row, Row>() {
+        JavaPairRDD<String, Row> withSizeList = pairs.reduceByKey(new Function2<Row, Row, Row>() {
             @Override
             public Row call(Row aRow, Row bRow) {
                 final String uniqueCommaSeparatedSizes = uniqueSizes(aRow, bRow);
@@ -48,7 +48,7 @@ public class AvailableSizes implements Serializable {
             }
         });
 
-        final JavaRDD<Row> values = withSizeRange.values();
+        final JavaRDD<Row> values = withSizeList.values();
         return ssc.createDataFrame(values, SalesColumns.getOutputSchema());
 
     }
