@@ -12,6 +12,7 @@ import java.io.Serializable;
 
 /**
  * Created by thoughtworker on 12/28/15.
+ * https://github.com/holdenk/spark-testing-base/blob/master/src/main/1.3/java/com/holdenkarau/spark/testing/SharedJavaSparkContext.java
  */
 public class BaseSparkTest implements Serializable {
     private static transient SparkContext _sc;
